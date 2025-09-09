@@ -32,6 +32,7 @@ const versionController = {
 
     const versions = documentVersions.get(documentName) || [];
     const versionIndex = parseInt(versionId) - 1;
+    console.log("vesrsions", versions, versionIndex);
 
     if (versionIndex < 0 || versionIndex >= versions.length) {
       return res.status(404).json({ error: "Version not found" });
