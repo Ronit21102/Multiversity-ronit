@@ -1,0 +1,26 @@
+{
+  "name": "collaboration-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "HocusPocus backend for collaborative editing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "@hocuspocus/server": "^2.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "yjs": "^13.6.27"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "changes/**/*",
+      "src/changes/**/*"
+    ]
+  }
+}

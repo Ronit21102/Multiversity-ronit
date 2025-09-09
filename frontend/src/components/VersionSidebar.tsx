@@ -1,0 +1,128 @@
+import React from "react";
+
+import { Version, VersionDiff } from "../types/editor";
+
+interface VersionSidebarProps {
+  showVersionSidebar: boolean;
+  versions: Version[];
+  loadingVersions: boolean;
+  selectedVersionDiff: VersionDiff | null;
+  showVersionPreview: boolean;
+  onClose: () => void;
+  onRefresh: () => void;
+  onViewVersion: (versionId: number) => void;
+}
+
+const VersionSidebar: React.FC<VersionSidebarProps> = ({
+  showVersionSidebar,
+  versions,
+  loadingVersions,
+  selectedVersionDiff,
+  showVersionPreview,
+  onClose,
+  onRefresh,
+  onViewVersion,
+}) => {
+  const formatTimestamp = (timestamp: string) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  if (!showVersionSidebar) {
+    return null;
+  }
+
+  return (
+    <div className="w-80 border-l border-gray-200 bg-gray-50">
+      <div className="flex h-full flex-col">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 bg-white p-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Version History
+          </h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onRefresh}
+              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              title="Refresh versions"
+            >
+              🔄
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Sidebar Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {loadingVersions ?
+            <div className="py-8 text-center text-gray-500">
+              <div className="text-sm">Loading versions...</div>
+            </div>
+          : versions.length === 0 ?
+            <div className="py-8 text-center text-gray-500">
+              <div className="text-sm">No versions saved yet</div>
+              <div className="mt-2 text-xs text-gray-400">
+                Save your document to create the first version
+              </div>
+            </div>
+          : <div className="space-y-3">
+              {versions.map((version) => (
+                <div
+                  key={version.id}
+                  className={`rounded-lg border p-3 shadow-sm transition-shadow hover:shadow-md ${
+                    (
+                      selectedVersionDiff?.versionId === version.id &&
+                      showVersionPreview
+                    ) ?
+                      "border-orange-300 bg-orange-50"
+                    : "border-gray-200 bg-white"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">
+                        {version.name}
+                      </div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        {formatTimestamp(version.timestamp)}
+                      </div>
+                      <div className="mt-1 text-xs text-gray-600">
+                        by {version.savedBy}
+                      </div>
+                    </div>
+                  </div>
+                  {version.id > 1 && (
+                    <button
+                      onClick={() => onViewVersion(version.id)}
+                      className={`mt-2 w-full rounded px-2 py-1 text-xs transition-colors ${
+                        (
+                          selectedVersionDiff?.versionId === version.id &&
+                          showVersionPreview
+                        ) ?
+                          "bg-orange-200 text-orange-800"
+                        : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      }`}
+                    >
+                      {(
+                        selectedVersionDiff?.versionId === version.id &&
+                        showVersionPreview
+                      ) ?
+                        "Previewing Changes"
+                      : "Preview Changes"}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default VersionSidebar;

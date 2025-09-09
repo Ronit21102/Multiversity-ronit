@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Collaboration cursor styles */
+.collaboration-cursor__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  display: inline;
+}
+
+/* Always show cursor labels like MS Word */
+.collaboration-cursor__label {
+  z-index: 1000 !important;
+  opacity: 1 !important;
+}
+
+/* Remove hover behavior since we want labels always visible */
+.collaboration-cursor__caret:hover .collaboration-cursor__label {
+  opacity: 1 !important;
+}
+
+/* Hide all collaboration text selections */
+.ProseMirror .collaboration-cursor__selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Remove any background highlighting */
+.ProseMirror span[data-decoration-id] {
+  background: transparent !important;
+}
+
+/* Hide selection backgrounds completely */
+.collaboration-cursor__selection-background {
+  display: none !important;
+}
+
+/* Smooth cursor animations */
+.collaboration-cursor__caret {
+  animation: cursor-blink 1.5s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 70% { opacity: 1; }
+  71%, 100% { opacity: 0.3; }
+}
