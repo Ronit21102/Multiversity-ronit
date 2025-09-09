@@ -1,61 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { HocuspocusProvider } from "@hocuspocus/provider";
-import * as Y from "yjs";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import Editor from "./components/Tiptap"; // Make sure this is correct
+import DocumentEditor from "./components/DocumentEditor";
+import DocumentList from "./components/DocumentList";
+import { Document } from "./types/document";
 
 const App: React.FC = () => {
-  const [ydoc] = useState(() => new Y.Doc());
-  const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
-  const room = "example-document";
+  // Sample documents - in a real app, this would come from an API
+  const [documents, setDocuments] = useState<Document[]>([
+    {
+      id: "doc-1",
+      title: "Project Planning Document",
+      description:
+        "Initial planning and roadmap for the new feature development",
+      createdAt: "2024-01-15T10:30:00Z",
+      updatedAt: "2024-01-16T14:22:00Z",
+      collaborators: ["Alice", "Bob", "Charlie"],
+    },
+    {
+      id: "doc-2",
+      title: "Meeting Notes",
+      description: "Weekly team sync meeting notes and action items",
+      createdAt: "2024-01-14T09:00:00Z",
+      updatedAt: "2024-01-14T11:45:00Z",
+      collaborators: ["Alice", "Bob"],
+    },
+    {
+      id: "doc-3",
+      title: "API Documentation",
+      description: "Technical documentation for the REST API endpoints",
+      createdAt: "2024-01-10T16:20:00Z",
+      updatedAt: "2024-01-15T13:10:00Z",
+      collaborators: ["Charlie", "Dave"],
+    },
+  ]);
 
-  useEffect(() => {
-    console.log("Creating HocusPocus provider..."); // Debug log
-
-    const hocuspocusProvider = new HocuspocusProvider({
-      url: "ws://localhost:1234",
-      name: room,
-      document: ydoc,
-    });
-
-    // Add event listeners after provider creation
-    hocuspocusProvider.on("connect", () => {
-      console.log("HocusPocus connected!");
-    });
-
-    hocuspocusProvider.on("disconnect", () => {
-      console.log("HocusPocus disconnected!");
-    });
-
-    hocuspocusProvider.on("status", (event: any) => {
-      console.log("HocusPocus status:", event);
-    });
-
-    setProvider(hocuspocusProvider);
-
-    return () => {
-      hocuspocusProvider.destroy();
+  const handleCreateDocument = () => {
+    const newDoc: Document = {
+      id: `doc-${Date.now()}`,
+      title: "New Document",
+      description: "A fresh collaborative document",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      collaborators: [],
     };
-  }, [ydoc, room]);
-
-  if (!provider) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Connecting to collaboration server...</div>
-      </div>
-    );
-  }
+    setDocuments((prev) => [newDoc, ...prev]);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-6xl px-4">
-        <h1 className="mb-8 text-center text-3xl font-bold">
-          Collaborative Editor
-        </h1>
-        <Editor ydoc={ydoc} provider={provider} room={room} />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <DocumentList
+              documents={documents}
+              onCreateDocument={handleCreateDocument}
+            />
+          }
+        />
+        <Route path="/document/:documentId" element={<DocumentEditor />} />
+      </Routes>
+    </Router>
   );
 };
 

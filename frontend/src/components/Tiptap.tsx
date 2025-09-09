@@ -58,7 +58,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
       Collaboration.extend().configure({
         document: ydoc,
       }),
-      CollaborationCaret.configure({
+      CollaborationCaret.configure({ //user presence
         provider,
         user: { name: "Loading...", color: "#000000" }, // Temporary user until real user is set
         render: createCollaborationCursor,
