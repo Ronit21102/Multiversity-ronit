@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 
+
+
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import Highlight from "@tiptap/extension-highlight";
@@ -9,20 +11,20 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import * as Y from "yjs";
 
-import {
-  useCurrentUser,
-  useOnlineUsers,
-  useProviderStatus,
-  useVersionManagement,
-} from "@/hooks/useEditor";
+
+
+import { useCurrentUser, useOnlineUsers, useProviderStatus, useVersionManagement } from "@/hooks/useEditor";
 import { defaultContent } from "@/utils/constants";
 import { createCollaborationCursor } from "@/utils/cursor";
+
+
 
 import { EditorProps } from "../types/editor";
 import EditorToolbar from "./EditorToolbar";
 import OnlineUsers from "./OnlineUsers";
 import VersionPreview from "./VersionPreview";
 import VersionSidebar from "./VersionSidebar";
+
 
 // =============================================================================
 // MAIN EDITOR COMPONENT
@@ -127,8 +129,28 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
   // Version actions
   const applyVersionChanges = useCallback(async () => {
     if (selectedVersionDiff && editor) {
+      const temp = new Y.Doc();
+      Y.applyUpdate(temp, new Uint8Array(selectedVersionDiff.currentState));
       try {
-        Y.applyUpdate(ydoc, new Uint8Array(selectedVersionDiff.currentState));
+        ydoc.transact(() => {
+          const currentFragment = ydoc.getXmlFragment("default");
+          const restoredFragment = temp.getXmlFragment("default");
+          if (currentFragment.length > 0) {
+            currentFragment.delete(0, currentFragment.length);
+          }
+
+          // Insert restored content
+          if (restoredFragment.length > 0) {
+            // Clone the content from restored document, filtering out YXmlHook items
+            const restoredContent = restoredFragment.toArray().filter(
+              (item) =>
+                item instanceof Y.XmlElement || item instanceof Y.XmlText
+            );
+            restoredContent.forEach((item, index) => {
+              currentFragment.insert(index, [item.clone()]);
+            });
+          }
+        }); //atomic update
         setShowVersionPreview(false);
         setSelectedVersionDiff(null);
         setPreviewDoc(null);
