@@ -4,6 +4,75 @@ import * as Y from "yjs";
 
 import { User, Version, VersionDiff } from "../types/editor";
 
+// Utility function to extract plain text from Y.XmlFragment
+const extractTextFromFragment = (fragment: Y.XmlFragment): string => {
+  try {
+    // Convert Y.js fragment to a simple text representation
+    const json = fragment.toJSON();
+    if (typeof json === "string") {
+      return json;
+    }
+
+    // If it's an object/array, try to extract text content
+    const extractText = (obj: any): string => {
+      if (typeof obj === "string") {
+        return obj;
+      }
+      if (Array.isArray(obj)) {
+        return obj.map(extractText).join("");
+      }
+      if (obj && typeof obj === "object") {
+        if (obj.text) return obj.text;
+        if (obj.content) return extractText(obj.content);
+        return Object.values(obj).map(extractText).join("");
+      }
+      return "";
+    };
+
+    return extractText(json);
+  } catch (error) {
+    console.warn("Failed to extract text from fragment:", error);
+    return fragment.toString();
+  }
+};
+
+// Utility function to compute text diff
+const computeTextDiff = (oldText: string, newText: string) => {
+  const oldLines = oldText.split("\n");
+  const newLines = newText.split("\n");
+
+  const diff: Array<{
+    type: "added" | "removed" | "unchanged";
+    content: string;
+    lineNumber?: number;
+  }> = [];
+
+  // Simple line-by-line diff (you could use a more sophisticated algorithm)
+  const maxLines = Math.max(oldLines.length, newLines.length);
+
+  for (let i = 0; i < maxLines; i++) {
+    const oldLine = oldLines[i];
+    const newLine = newLines[i];
+
+    if (oldLine === undefined) {
+      // Line added
+      diff.push({ type: "added", content: newLine, lineNumber: i + 1 });
+    } else if (newLine === undefined) {
+      // Line removed
+      diff.push({ type: "removed", content: oldLine, lineNumber: i + 1 });
+    } else if (oldLine === newLine) {
+      // Line unchanged
+      diff.push({ type: "unchanged", content: newLine, lineNumber: i + 1 });
+    } else {
+      // Line changed - show as removed + added
+      diff.push({ type: "removed", content: oldLine, lineNumber: i + 1 });
+      diff.push({ type: "added", content: newLine, lineNumber: i + 1 });
+    }
+  }
+
+  return diff;
+};
+
 // Hook for managing provider connection status
 export const useProviderStatus = (provider: any) => {
   const [status, setStatus] = useState<
@@ -131,6 +200,11 @@ export const useVersionManagement = (
     useState<VersionDiff | null>(null);
   const [showVersionPreview, setShowVersionPreview] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<Y.Doc | null>(null);
+  const [diffData, setDiffData] = useState<Array<{
+    type: "added" | "removed" | "unchanged";
+    content: string;
+    lineNumber?: number;
+  }> | null>(null);
 
   const saveDocument = useCallback(() => {
     console.log("🔍 Save button clicked");
@@ -210,6 +284,26 @@ export const useVersionManagement = (
           console.log("Previous Y.js XML:", previousFragment.toString());
           console.log("Current JSON content:", currentFragment.toJSON());
           console.log("Previous JSON content:", previousFragment.toJSON());
+
+          // Compute text diff for preview
+          const currentText = extractTextFromFragment(currentFragment);
+          const previousText = extractTextFromFragment(previousFragment);
+          const diff = computeTextDiff(previousText, currentText);
+          setDiffData(diff);
+
+          console.log("📊 Computed diff:", diff);
+        } else {
+          // No previous version, show current as all additions
+          const currentFragment = currentDoc.get("default", Y.XmlFragment);
+          const currentText = extractTextFromFragment(currentFragment);
+          const diff = currentText
+            .split("\n")
+            .map((line: string, index: number) => ({
+              type: "added" as const,
+              content: line,
+              lineNumber: index + 1,
+            }));
+          setDiffData(diff);
         }
 
         setPreviewDoc(currentDoc);
@@ -225,6 +319,7 @@ export const useVersionManagement = (
     setShowVersionSidebar(false);
     setShowVersionPreview(false);
     setSelectedVersionDiff(null);
+    setDiffData(null);
   }, []);
 
   return {
@@ -234,6 +329,7 @@ export const useVersionManagement = (
     selectedVersionDiff,
     showVersionPreview,
     previewDoc,
+    diffData,
     saveDocument,
     fetchVersionHistory,
     openVersionSidebar,

@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect } from "react";
 
-
-
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import Highlight from "@tiptap/extension-highlight";
@@ -11,20 +9,20 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import * as Y from "yjs";
 
-
-
-import { useCurrentUser, useOnlineUsers, useProviderStatus, useVersionManagement } from "@/hooks/useEditor";
+import {
+  useCurrentUser,
+  useOnlineUsers,
+  useProviderStatus,
+  useVersionManagement,
+} from "@/hooks/useEditor";
 import { defaultContent } from "@/utils/constants";
 import { createCollaborationCursor } from "@/utils/cursor";
-
-
 
 import { EditorProps } from "../types/editor";
 import EditorToolbar from "./EditorToolbar";
 import OnlineUsers from "./OnlineUsers";
 import VersionPreview from "./VersionPreview";
 import VersionSidebar from "./VersionSidebar";
-
 
 // =============================================================================
 // MAIN EDITOR COMPONENT
@@ -60,7 +58,8 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
       Collaboration.extend().configure({
         document: ydoc,
       }),
-      CollaborationCaret.configure({ //user presence
+      CollaborationCaret.configure({
+        //user presence
         provider,
         user: { name: "Loading...", color: "#000000" }, // Temporary user until real user is set
         render: createCollaborationCursor,
@@ -94,6 +93,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
     selectedVersionDiff,
     showVersionPreview,
     previewDoc,
+    diffData,
     saveDocument,
     fetchVersionHistory,
     openVersionSidebar,
@@ -142,10 +142,12 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
           // Insert restored content
           if (restoredFragment.length > 0) {
             // Clone the content from restored document, filtering out YXmlHook items
-            const restoredContent = restoredFragment.toArray().filter(
-              (item) =>
-                item instanceof Y.XmlElement || item instanceof Y.XmlText
-            );
+            const restoredContent = restoredFragment
+              .toArray()
+              .filter(
+                (item) =>
+                  item instanceof Y.XmlElement || item instanceof Y.XmlText,
+              );
             restoredContent.forEach((item, index) => {
               currentFragment.insert(index, [item.clone()]);
             });
@@ -215,6 +217,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
         showVersionPreview={showVersionPreview}
         selectedVersionDiff={selectedVersionDiff}
         previewEditor={dynamicPreviewEditor}
+        diffData={diffData}
         onApplyVersion={applyVersionChanges}
         onDiscardVersion={discardVersionChanges}
       />

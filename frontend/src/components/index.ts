@@ -7,6 +7,7 @@ export { default as VersionSidebar } from "./VersionSidebar";
 export { default as Tiptap } from "./Tiptap";
 export { default as DocumentList } from "./DocumentList";
 export { default as DocumentEditor } from "./DocumentEditor";
+export { default as DiffViewer } from "./DiffViewer";
 
 // Re-export the main editor component as default
 export { default } from "./Tiptap";
