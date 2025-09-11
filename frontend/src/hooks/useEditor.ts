@@ -8,11 +8,17 @@ import { User, Version, VersionDiff } from "../types/editor";
 const extractTextFromFragment = (fragment: Y.XmlFragment): string => {
   try {
     // Convert Y.js fragment to a simple text representation
+    console.log("Fragment:", fragment);
     const json = fragment.toJSON();
+    console.log("Fragment JSON:", json);
+    console.log("typeof json:", typeof json);
+
     if (typeof json === "string") {
-      return json;
+      // Parse the XML-like string to extract text content
+      return parseXmlToText(json);
     }
 
+    console.log("Fragment JSON:", json);
     // If it's an object/array, try to extract text content
     const extractText = (obj: any): string => {
       if (typeof obj === "string") {
@@ -33,6 +39,42 @@ const extractTextFromFragment = (fragment: Y.XmlFragment): string => {
   } catch (error) {
     console.warn("Failed to extract text from fragment:", error);
     return fragment.toString();
+  }
+};
+
+// Helper function to parse XML-like string and extract text content
+const parseXmlToText = (xmlString: string): string => {
+  try {
+    // Simple regex-based approach to extract text content from XML-like tags
+    let text = xmlString;
+
+    // Handle different tag types and extract their text content
+    text = text
+      // Extract text from heading tags
+      .replace(/<heading[^>]*>(.*?)<\/heading>/g, "$1\n")
+      // Extract text from paragraph tags
+      .replace(/<paragraph[^>]*>(.*?)<\/paragraph>/g, "$1\n")
+      // Extract text from table cells and headers
+      .replace(/<tableheader[^>]*>(.*?)<\/tableheader>/g, "$1\t")
+      .replace(/<tablecell[^>]*>(.*?)<\/tablecell>/g, "$1\t")
+      // Remove table structure tags but keep content
+      .replace(/<table[^>]*>/g, "")
+      .replace(/<\/table>/g, "\n")
+      .replace(/<tablerow[^>]*>/g, "")
+      .replace(/<\/tablerow>/g, "\n")
+      // Handle hard breaks
+      .replace(/<hardbreak[^>]*><\/hardbreak>/g, "\n")
+      // Remove any remaining tags
+      .replace(/<[^>]*>/g, "")
+      // Clean up multiple newlines and whitespace
+      .replace(/\n\s*\n/g, "\n")
+      .replace(/\t+/g, " ")
+      .trim();
+
+    return text;
+  } catch (error) {
+    console.warn("Failed to parse XML string:", error);
+    return xmlString;
   }
 };
 
@@ -286,6 +328,7 @@ export const useVersionManagement = (
           console.log("Previous JSON content:", previousFragment.toJSON());
 
           // Compute text diff for preview
+          console.log("yaha");
           const currentText = extractTextFromFragment(currentFragment);
           const previousText = extractTextFromFragment(previousFragment);
           const diff = computeTextDiff(previousText, currentText);
