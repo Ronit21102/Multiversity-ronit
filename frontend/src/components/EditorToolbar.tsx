@@ -77,6 +77,78 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         >
           &lt;/&gt;
         </button>
+
+        {/* Table Controls */}
+        <div className="mx-2 h-6 w-px bg-gray-300"></div>
+        <button
+          onClick={() =>
+            editor
+              .chain()
+              .focus()
+              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+              .run()
+          }
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200"
+          title="Insert Table"
+        >
+          ⊞
+        </button>
+        <button
+          onClick={() => editor.chain().focus().addColumnBefore().run()}
+          disabled={!editor.can().addColumnBefore()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Add Column Before"
+        >
+          ⊏
+        </button>
+        <button
+          onClick={() => editor.chain().focus().addColumnAfter().run()}
+          disabled={!editor.can().addColumnAfter()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Add Column After"
+        >
+          ⊐
+        </button>
+        <button
+          onClick={() => editor.chain().focus().deleteColumn().run()}
+          disabled={!editor.can().deleteColumn()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Delete Column"
+        >
+          ⊟
+        </button>
+        <button
+          onClick={() => editor.chain().focus().addRowBefore().run()}
+          disabled={!editor.can().addRowBefore()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Add Row Before"
+        >
+          ⊤
+        </button>
+        <button
+          onClick={() => editor.chain().focus().addRowAfter().run()}
+          disabled={!editor.can().addRowAfter()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Add Row After"
+        >
+          ⊥
+        </button>
+        <button
+          onClick={() => editor.chain().focus().deleteRow().run()}
+          disabled={!editor.can().deleteRow()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 bg-white text-xs text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Delete Row"
+        >
+          ⊝
+        </button>
+        <button
+          onClick={() => editor.chain().focus().deleteTable().run()}
+          disabled={!editor.can().deleteTable()}
+          className="flex h-8 w-8 items-center justify-center rounded border border-red-300 bg-red-50 text-xs text-red-700 transition-all duration-200 hover:bg-gray-200 disabled:opacity-50"
+          title="Delete Table"
+        >
+          🗑
+        </button>
       </div>
 
       {/* Status Section */}

@@ -4,6 +4,10 @@ import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import Highlight from "@tiptap/extension-highlight";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
+import { Table } from "@tiptap/extension-table";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import TableRow from "@tiptap/extension-table-row";
 import { CharacterCount } from "@tiptap/extensions";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -52,6 +56,12 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
       Highlight,
       TaskList,
       TaskItem,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
       CharacterCount.extend().configure({
         limit: 10000,
       }),
@@ -113,6 +123,12 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
         Highlight,
         TaskList,
         TaskItem,
+        Table.configure({
+          resizable: true,
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
         Collaboration.extend().configure({
           document: previewDoc || new Y.Doc(),
         }),
@@ -207,7 +223,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
         <div className="prose prose-sm max-w-none">
           <EditorContent
             editor={editor}
-            className="min-h-[500px] p-4 focus:outline-none [&_.ProseMirror]:min-h-[450px] [&_.ProseMirror]:outline-none [&_.ProseMirror_code]:rounded [&_.ProseMirror_code]:bg-gray-100 [&_.ProseMirror_code]:px-1 [&_.ProseMirror_em]:italic [&_.ProseMirror_p]:my-2 [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_ul]:ml-6 [&_.ProseMirror_ul]:list-disc"
+            className="min-h-[500px] p-4 focus:outline-none [&_.ProseMirror]:min-h-[450px] [&_.ProseMirror]:outline-none [&_.ProseMirror_.column-resize-handle]:pointer-events-none [&_.ProseMirror_.column-resize-handle]:absolute [&_.ProseMirror_.column-resize-handle]:bottom-0 [&_.ProseMirror_.column-resize-handle]:right-[-2px] [&_.ProseMirror_.column-resize-handle]:top-0 [&_.ProseMirror_.column-resize-handle]:w-1 [&_.ProseMirror_.column-resize-handle]:bg-blue-500 [&_.ProseMirror_.resize-cursor]:cursor-col-resize [&_.ProseMirror_.selectedCell]:bg-blue-100 [&_.ProseMirror_code]:rounded [&_.ProseMirror_code]:bg-gray-100 [&_.ProseMirror_code]:px-1 [&_.ProseMirror_em]:italic [&_.ProseMirror_p]:my-2 [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_table]:mb-4 [&_.ProseMirror_table]:mt-4 [&_.ProseMirror_table]:w-full [&_.ProseMirror_table]:table-auto [&_.ProseMirror_table]:border-collapse [&_.ProseMirror_td]:relative [&_.ProseMirror_td]:min-w-[1em] [&_.ProseMirror_td]:border [&_.ProseMirror_td]:border-gray-300 [&_.ProseMirror_td]:p-2 [&_.ProseMirror_th]:relative [&_.ProseMirror_th]:min-w-[1em] [&_.ProseMirror_th]:border [&_.ProseMirror_th]:border-gray-300 [&_.ProseMirror_th]:bg-gray-50 [&_.ProseMirror_th]:p-2 [&_.ProseMirror_th]:font-semibold [&_.ProseMirror_ul]:ml-6 [&_.ProseMirror_ul]:list-disc"
           />
         </div>
       </div>
