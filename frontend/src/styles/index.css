@@ -45,3 +45,124 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(75, 85, 99, 0.1);
 }
+
+/* Enhanced table styling for Excel-like appearance */
+.ProseMirror table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 2px solid #d1d5db;
+  margin: 20px 0;
+  position: relative;
+}
+
+/* Table headers with column labels */
+.ProseMirror table::before {
+  content: '';
+  position: absolute;
+  top: -25px;
+  left: 30px;
+  right: 0;
+  height: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-bottom: none;
+  z-index: 5;
+}
+
+/* Row numbers */
+.ProseMirror tr {
+  position: relative;
+}
+
+.ProseMirror tr::before {
+  content: counter(row-counter);
+  counter-increment: row-counter;
+  position: absolute;
+  left: -25px;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  z-index: 10;
+}
+
+/* Reset counter for each table */
+.ProseMirror table {
+  counter-reset: row-counter;
+}
+
+/* Column headers */
+.ProseMirror td:nth-child(1)::after,
+.ProseMirror th:nth-child(1)::after { content: "A"; }
+.ProseMirror td:nth-child(2)::after,
+.ProseMirror th:nth-child(2)::after { content: "B"; }
+.ProseMirror td:nth-child(3)::after,
+.ProseMirror th:nth-child(3)::after { content: "C"; }
+.ProseMirror td:nth-child(4)::after,
+.ProseMirror th:nth-child(4)::after { content: "D"; }
+.ProseMirror td:nth-child(5)::after,
+.ProseMirror th:nth-child(5)::after { content: "E"; }
+.ProseMirror td:nth-child(6)::after,
+.ProseMirror th:nth-child(6)::after { content: "F"; }
+.ProseMirror td:nth-child(7)::after,
+.ProseMirror th:nth-child(7)::after { content: "G"; }
+.ProseMirror td:nth-child(8)::after,
+.ProseMirror th:nth-child(8)::after { content: "H"; }
+
+.ProseMirror td::after,
+.ProseMirror th::after {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 1px 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  position: relative;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  min-width: 80px;
+  background: white;
+}
+
+.ProseMirror th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.ProseMirror .selectedCell {
+  background: #dbeafe !important;
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+/* Cell reference display in toolbar */
+.cell-reference-display {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  min-width: 50px;
+  text-align: center;
+  font-weight: 600;
+}

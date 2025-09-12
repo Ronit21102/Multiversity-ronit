@@ -3,6 +3,7 @@ import React from "react";
 import { Editor } from "@tiptap/react";
 
 import { User } from "../types/editor";
+import CellReferenceDisplay from "./CellReferenceDisplay";
 
 interface EditorToolbarProps {
   editor: Editor;
@@ -153,6 +154,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
       {/* Status Section */}
       <div className="flex items-center gap-3">
+        <CellReferenceDisplay editor={editor} />
         <button
           onClick={onVersionHistory}
           className="flex items-center gap-2 rounded-md border border-blue-300 bg-blue-50 px-3 py-1 text-sm text-blue-700 transition-colors hover:bg-blue-100"

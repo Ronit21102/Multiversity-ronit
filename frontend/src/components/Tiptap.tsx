@@ -13,16 +13,19 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import * as Y from "yjs";
 
+import { CellReferenceExtension } from "@/extensions/CellReferenceExtension";
 import {
   useCurrentUser,
   useOnlineUsers,
   useProviderStatus,
   useVersionManagement,
 } from "@/hooks/useEditor";
+import { getCurrentCellReference } from "@/utils/cellReference";
 import { defaultContent } from "@/utils/constants";
 import { createCollaborationCursor } from "@/utils/cursor";
 
 import { EditorProps } from "../types/editor";
+import DynamicTableStyles from "./DynamicTableStyles";
 import EditorToolbar from "./EditorToolbar";
 import OnlineUsers from "./OnlineUsers";
 import VersionPreview from "./VersionPreview";
@@ -74,6 +77,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
         user: { name: "Loading...", color: "#000000" }, // Temporary user until real user is set
         render: createCollaborationCursor,
       }),
+      CellReferenceExtension,
     ],
     editorProps: {
       attributes: {
@@ -198,8 +202,10 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl gap-4">
-      {/* Main Editor */}
+    <>
+      <DynamicTableStyles maxColumns={100} />
+      <div className="mx-auto flex w-full max-w-7xl gap-4">
+        {/* Main Editor */}
       <div
         className={`${showVersionPreview ? "w-1/2" : "flex-1"} rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300`}
       >
@@ -249,7 +255,8 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
         onRefresh={fetchVersionHistory}
         onViewVersion={viewVersionChanges}
       />
-    </div>
+      </div>
+    </>
   );
 };
 
