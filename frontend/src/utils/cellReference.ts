@@ -20,6 +20,20 @@ export function letterToColumnIndex(letter: string): number {
   return result - 1;
 }
 
+// Parse cell reference like "A3" to row and column indices
+export function parseCellReference(cellRef: string): { row: number; col: number } | null {
+  const match = cellRef.match(/^([A-Z]+)(\d+)$/);
+  if (!match) return null;
+  
+  const colLetter = match[1];
+  const rowNumber = parseInt(match[2], 10);
+  
+  return {
+    col: letterToColumnIndex(colLetter),
+    row: rowNumber - 1 // Convert to 0-based index
+  };
+}
+
 // Generate CSS for column headers dynamically
 export function generateColumnHeaderCSS(maxColumns = 50): string {
   let css = "";

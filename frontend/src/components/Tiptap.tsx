@@ -20,7 +20,7 @@ import {
   useProviderStatus,
   useVersionManagement,
 } from "@/hooks/useEditor";
-import { getCurrentCellReference } from "@/utils/cellReference";
+import { getCurrentCellReference, parseCellReference } from "@/utils/cellReference";
 import { defaultContent } from "@/utils/constants";
 import { createCollaborationCursor } from "@/utils/cursor";
 
@@ -117,6 +117,78 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
     setSelectedVersionDiff,
     setPreviewDoc,
   } = useVersionManagement(room, provider, currentUser);
+
+  // Cell highlighting function
+  const highlightCell = useCallback((cellRef: string) => {
+    console.log('Highlighting cell:', cellRef);
+    if (!editor) {
+      console.log('No editor available');
+      return;
+    }
+    
+    const position = parseCellReference(cellRef);
+    if (!position) {
+      console.warn(`Invalid cell reference: ${cellRef}`);
+      return;
+    }
+
+    try {
+      // Focus the editor first
+      editor.commands.focus();
+      
+      // Find and highlight the cell in the DOM
+      setTimeout(() => {
+        const editorElement = editor.view.dom;
+        const tables = editorElement.querySelectorAll('table');
+        
+        if (tables.length > 0) {
+          const table = tables[0]; // Assume first table for now
+          const rows = table.querySelectorAll('tr');
+          
+          // Skip header row (row with A, B, C labels) and get actual data rows
+          if (rows.length > position.row + 1) { // +1 because we skip header row
+            const targetRow = rows[position.row + 1]; // +1 to skip header
+            const cells = targetRow.querySelectorAll('td, th');
+            
+            if (cells.length > position.col) {
+              const targetCell = cells[position.col];
+              
+              // Clear any existing highlights
+              editorElement.querySelectorAll('.cell-highlight').forEach(el => {
+                el.classList.remove('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
+              });
+              
+              // Add blue highlight to target cell
+              targetCell.classList.add('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
+              
+              // Scroll cell into view
+              targetCell.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'center'
+              });
+              
+              // Remove highlight after 3 seconds
+              setTimeout(() => {
+                targetCell.classList.remove('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
+              }, 3000);
+              
+              console.log(`Successfully highlighted cell ${cellRef} at row ${position.row}, col ${position.col}`);
+            } else {
+              console.warn(`Column ${position.col} not found in row ${position.row}`);
+            }
+          } else {
+            console.warn(`Row ${position.row} not found in table`);
+          }
+        } else {
+          console.warn('No table found in editor');
+        }
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error highlighting cell:', error);
+    }
+  }, [editor]);
 
   // Preview editor for version comparison
   const dynamicPreviewEditor = useEditor(
@@ -242,6 +314,7 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
           diffData={diffData}
           onApplyVersion={applyVersionChanges}
           onDiscardVersion={discardVersionChanges}
+          onCellClick={highlightCell}
         />
 
         {/* Version History Sidebar */}

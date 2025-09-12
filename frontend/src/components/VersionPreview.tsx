@@ -15,6 +15,7 @@ interface VersionPreviewProps {
   }> | null;
   onApplyVersion: () => void;
   onDiscardVersion: () => void;
+  onCellClick?: (cellRef: string) => void;
 }
 
 const VersionPreview: React.FC<VersionPreviewProps> = ({
@@ -24,6 +25,7 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
   diffData,
   onApplyVersion,
   onDiscardVersion,
+  onCellClick,
 }) => {
   if (!showVersionPreview || !selectedVersionDiff) {
     return null;
@@ -65,7 +67,13 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
                     className="rounded border bg-gray-50 p-2 text-xs"
                   >
                     <div className="mb-1 font-medium text-gray-700">
-                       {change.cellRef}
+                      <button
+                        onClick={() => onCellClick?.(change.cellRef)}
+                        className="font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-2"
+                        title={`Click to highlight cell ${change.cellRef} in the editor`}
+                      >
+                        {change.cellRef}
+                      </button>
                       <span
                         className={`ml-2 rounded px-1 text-xs ${
                           change.changeType === "added" ?
