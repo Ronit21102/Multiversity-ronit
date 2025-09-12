@@ -69,7 +69,7 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
                     <div className="mb-1 font-medium text-gray-700">
                       <button
                         onClick={() => onCellClick?.(change.cellRef)}
-                        className="font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-2"
+                        className="mr-2 cursor-pointer rounded border border-blue-200 bg-blue-50 px-2 py-1 font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline"
                         title={`Click to highlight cell ${change.cellRef} in the editor`}
                       >
                         {change.cellRef}

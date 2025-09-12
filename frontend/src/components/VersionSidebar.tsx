@@ -11,6 +11,7 @@ interface VersionSidebarProps {
   onClose: () => void;
   onRefresh: () => void;
   onViewVersion: (versionId: number) => void;
+  onCellClick?: (cellRef: string) => void;
 }
 
 const VersionSidebar: React.FC<VersionSidebarProps> = ({
@@ -22,6 +23,7 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
   onClose,
   onRefresh,
   onViewVersion,
+  onCellClick,
 }) => {
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
@@ -103,7 +105,7 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                         <div className="mt-2 space-y-1">
                           {version.cellInfo.currentCellRef && (
                             <div className="rounded bg-blue-50 px-2 py-1 text-xs text-blue-600">
-                               Active: {version.cellInfo.currentCellRef}
+                              Active: {version.cellInfo.currentCellRef}
                             </div>
                           )}
                           {version.cellInfo.editedCells &&
@@ -159,9 +161,19 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                                   key={idx}
                                   className="mb-1 text-xs text-gray-600"
                                 >
-                                  <span className="font-mono font-medium">
+                                  <button
+                                    onClick={() => {
+                                      console.log(
+                                        "Cell clicked in sidebar:",
+                                        change.cellRef,
+                                      );
+                                      onCellClick?.(change.cellRef);
+                                    }}
+                                    className="cursor-pointer rounded border border-blue-200 bg-blue-50 px-1 font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                                    title={`Click to highlight cell ${change.cellRef} in the editor`}
+                                  >
                                     {change.cellRef}:
-                                  </span>{" "}
+                                  </button>{" "}
                                   <span className="text-red-500">
                                     "{change.previousContent || "empty"}"
                                   </span>

@@ -20,7 +20,7 @@ import {
   useProviderStatus,
   useVersionManagement,
 } from "@/hooks/useEditor";
-import { getCurrentCellReference, parseCellReference } from "@/utils/cellReference";
+import { parseCellReference } from "@/utils/cellReference";
 import { defaultContent } from "@/utils/constants";
 import { createCollaborationCursor } from "@/utils/cursor";
 
@@ -119,76 +119,137 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
   } = useVersionManagement(room, provider, currentUser);
 
   // Cell highlighting function
-  const highlightCell = useCallback((cellRef: string) => {
-    console.log('Highlighting cell:', cellRef);
-    if (!editor) {
-      console.log('No editor available');
-      return;
-    }
-    
-    const position = parseCellReference(cellRef);
-    if (!position) {
-      console.warn(`Invalid cell reference: ${cellRef}`);
-      return;
-    }
+  const highlightCell = useCallback(
+    (cellRef: string) => {
+      console.log("Highlighting cell:", cellRef);
+      if (!editor) {
+        console.log("No editor available");
+        return;
+      }
 
-    try {
-      // Focus the editor first
-      editor.commands.focus();
-      
-      // Find and highlight the cell in the DOM
-      setTimeout(() => {
-        const editorElement = editor.view.dom;
-        const tables = editorElement.querySelectorAll('table');
-        
-        if (tables.length > 0) {
-          const table = tables[0]; // Assume first table for now
-          const rows = table.querySelectorAll('tr');
-          
-          // Skip header row (row with A, B, C labels) and get actual data rows
-          if (rows.length > position.row + 1) { // +1 because we skip header row
-            const targetRow = rows[position.row + 1]; // +1 to skip header
-            const cells = targetRow.querySelectorAll('td, th');
+      const position = parseCellReference(cellRef);
+      if (!position) {
+        console.warn(`Invalid cell reference: ${cellRef}`);
+        return;
+      }
+
+      try {
+        // Focus the editor first
+        editor.commands.focus();
+
+        // Find and highlight the cell in the DOM
+        setTimeout(() => {
+          const editorElement = editor.view.dom;
+          const tables = editorElement.querySelectorAll("table");
+          console.log('Tables found:', tables.length);
+
+          if (tables.length > 0) {
+            const table = tables[0]; // Assume first table for now
+            const rows = table.querySelectorAll("tr");
+            console.log('Rows found:', rows.length, 'Looking for row:', position.row);
+
+            // Try different row indices to find the right cell
+            // For A3, we want the 3rd row of data, which could be at different indices
+            let foundCell = null;
+            let targetRowIndex = -1;
             
-            if (cells.length > position.col) {
-              const targetCell = cells[position.col];
+            // Try different row indices (0-based, 1-based, etc.)
+            for (let tryRow = 0; tryRow < rows.length; tryRow++) {
+              const testRow = rows[tryRow];
+              const testCells = testRow.querySelectorAll("td, th");
               
+              console.log(`Trying row ${tryRow}: has ${testCells.length} cells`);
+              
+              if (testCells.length > position.col) {
+                const testCell = testCells[position.col];
+                console.log(`Row ${tryRow}, Col ${position.col} content:`, testCell.textContent?.trim());
+                
+                // For A3, if we find a row that might be our target, use it
+                if (tryRow === position.row || tryRow === position.row + 1) {
+                  foundCell = testCell;
+                  targetRowIndex = tryRow;
+                  break;
+                }
+              }
+            }
+
+            if (foundCell) {
+              const targetCell = foundCell;
+              console.log(
+                "Found target cell:",
+                targetCell,
+                "at row:",
+                targetRowIndex,
+                "col:",
+                position.col,
+              );
+
               // Clear any existing highlights
-              editorElement.querySelectorAll('.cell-highlight').forEach(el => {
-                el.classList.remove('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
-              });
+              editorElement
+                .querySelectorAll(".cell-highlight")
+                .forEach((el) => {
+                  const htmlEl = el as HTMLElement;
+                  htmlEl.classList.remove("cell-highlight");
+                  htmlEl.style.backgroundColor = "";
+                  htmlEl.style.border = "";
+                  htmlEl.style.boxShadow = "";
+                  htmlEl.style.transform = "";
+                  htmlEl.style.zIndex = "";
+                  htmlEl.style.position = "";
+                  htmlEl.style.transition = "";
+                });
+
+              // Add aggressive blue highlight to target cell
+              const htmlTargetCell = targetCell as HTMLElement;
+              htmlTargetCell.classList.add("cell-highlight");
               
-              // Add blue highlight to target cell
-              targetCell.classList.add('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
+              // Apply very visible highlight
+              htmlTargetCell.style.backgroundColor = "#3b82f6"; // Bright blue
+              htmlTargetCell.style.border = "4px solid #f59e0b"; // Orange border
+              htmlTargetCell.style.boxShadow = "0 0 20px rgba(245, 158, 11, 0.8)"; // Orange glow
+              htmlTargetCell.style.transform = "scale(1.05)"; // Slightly larger
+              htmlTargetCell.style.zIndex = "1000"; // Bring to front
+              htmlTargetCell.style.position = "relative";
+              htmlTargetCell.style.transition = "all 0.3s ease";
               
+              console.log('Applied highlight styles to cell:', htmlTargetCell);
+
               // Scroll cell into view
-              targetCell.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'center'
+              targetCell.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center",
               });
-              
+
               // Remove highlight after 3 seconds
               setTimeout(() => {
-                targetCell.classList.remove('cell-highlight', 'bg-blue-200', 'ring-2', 'ring-blue-400');
+                htmlTargetCell.classList.remove("cell-highlight");
+                htmlTargetCell.style.backgroundColor = "";
+                htmlTargetCell.style.border = "";
+                htmlTargetCell.style.boxShadow = "";
+                htmlTargetCell.style.transform = "";
+                htmlTargetCell.style.zIndex = "";
+                htmlTargetCell.style.position = "";
+                htmlTargetCell.style.transition = "";
+                console.log('Removed highlight from cell');
               }, 3000);
-              
-              console.log(`Successfully highlighted cell ${cellRef} at row ${position.row}, col ${position.col}`);
+
+              console.log(
+                `Successfully highlighted cell ${cellRef} at row ${targetRowIndex}, col ${position.col}`,
+              );
             } else {
-              console.warn(`Column ${position.col} not found in row ${position.row}`);
+              console.warn(`No suitable cell found for ${cellRef}`);
             }
           } else {
-            console.warn(`Row ${position.row} not found in table`);
+            console.warn("No table found in editor");
           }
-        } else {
-          console.warn('No table found in editor');
-        }
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error highlighting cell:', error);
-    }
-  }, [editor]);
+        }, 100);
+      } catch (error) {
+        console.error("Error highlighting cell:", error);
+      }
+    },
+    [editor],
+  );
 
   // Preview editor for version comparison
   const dynamicPreviewEditor = useEditor(
