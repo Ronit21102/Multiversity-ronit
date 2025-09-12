@@ -8,6 +8,11 @@ interface VersionPreviewProps {
   showVersionPreview: boolean;
   selectedVersionDiff: VersionDiff | null;
   previewEditor: Editor | null;
+  diffData: Array<{
+    type: "added" | "removed" | "unchanged";
+    content: string;
+    lineNumber?: number;
+  }> | null;
   onApplyVersion: () => void;
   onDiscardVersion: () => void;
 }
@@ -16,10 +21,11 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
   showVersionPreview,
   selectedVersionDiff,
   previewEditor,
+  diffData,
   onApplyVersion,
   onDiscardVersion,
 }) => {
-  if (!showVersionPreview || !selectedVersionDiff || !previewEditor) {
+  if (!showVersionPreview || !selectedVersionDiff) {
     return null;
   }
 
@@ -29,7 +35,8 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
       <div className="border-b border-orange-200 bg-orange-100 p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-orange-900">
-            📄 Version {selectedVersionDiff.versionId} Preview
+            📄 Version {selectedVersionDiff.versionId}{" "}
+            {diffData ? "Diff" : "Preview"}
           </h3>
           <button
             onClick={onDiscardVersion}
@@ -40,16 +47,50 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
           </button>
         </div>
         <p className="mt-1 text-sm text-orange-700">
-          Read-only preview of version content
+          {diffData ?
+            "Changes from previous version (+ added, - removed)"
+          : "Read-only preview of version content"}
         </p>
       </div>
 
       {/* Preview Content */}
       <div className="max-h-[500px] overflow-y-auto p-4">
-        <EditorContent
-          editor={previewEditor}
-          className="[&_.ProseMirror]:outline-none"
-        />
+        {diffData && diffData.length > 0 ?
+          <div className="space-y-0 font-mono text-sm">
+            {diffData.map((line, index) => (
+              <div
+                key={index}
+                className={`flex px-2 py-1 ${
+                  line.type === "added" ? "bg-green-100 text-green-800"
+                  : line.type === "removed" ? "bg-red-100 text-red-800"
+                  : "bg-gray-50 text-gray-700"
+                }`}
+              >
+                <span className="mr-4 w-8 text-right text-gray-500">
+                  {line.lineNumber || index + 1}
+                </span>
+                <span className="mr-2 w-4 text-center">
+                  {line.type === "added" ?
+                    "+"
+                  : line.type === "removed" ?
+                    "-"
+                  : " "}
+                </span>
+                <span className="flex-1 whitespace-pre-wrap break-words">
+                  {line.content || " "}
+                </span>
+              </div>
+            ))}
+          </div>
+        : previewEditor ?
+          <EditorContent
+            editor={previewEditor}
+            className="[&_.ProseMirror]:outline-none"
+          />
+        : <div className="py-8 text-center text-gray-500">
+            No preview available
+          </div>
+        }
       </div>
 
       {/* Preview Actions */}
