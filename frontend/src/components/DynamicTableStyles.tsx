@@ -1,20 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 interface DynamicTableStylesProps {
   maxColumns?: number;
 }
 
-const DynamicTableStyles: React.FC<DynamicTableStylesProps> = ({ maxColumns = 50 }) => {
+const DynamicTableStyles: React.FC<DynamicTableStylesProps> = ({
+  maxColumns = 50,
+}) => {
   useEffect(() => {
     // Create or update the dynamic styles
-    let styleElement = document.getElementById('dynamic-table-styles');
-    
+    let styleElement = document.getElementById("dynamic-table-styles");
+
     if (!styleElement) {
-      styleElement = document.createElement('style');
-      styleElement.id = 'dynamic-table-styles';
+      styleElement = document.createElement("style");
+      styleElement.id = "dynamic-table-styles";
       document.head.appendChild(styleElement);
     }
-    
+
     // Generate clean CSS without overlapping headers
     const css = `
       /* Enhanced table styling for Excel-like appearance */
@@ -143,7 +145,7 @@ const DynamicTableStyles: React.FC<DynamicTableStylesProps> = ({ maxColumns = 50
       }
 
       /* Generate column letters ONLY for the header area (not inside cells) */
-      ${Array.from({length: maxColumns}, (_, i) => {
+      ${Array.from({ length: maxColumns }, (_, i) => {
         const letter = String.fromCharCode(65 + (i % 26));
         const columnSelector = i + 1;
         return `
@@ -167,7 +169,7 @@ const DynamicTableStyles: React.FC<DynamicTableStylesProps> = ({ maxColumns = 50
   z-index: 15 !important;
   pointer-events: none !important;
 }`;
-      }).join('')}
+      }).join("")}
 
       /* COMPLETELY HIDE all cell reference decorations and letters inside cells */
       .ProseMirror td .cell-reference,
@@ -206,12 +208,12 @@ const DynamicTableStyles: React.FC<DynamicTableStylesProps> = ({ maxColumns = 50
         display: none !important;
       }
     `;
-    
+
     styleElement.textContent = css;
-    
+
     return () => {
       // Cleanup if component unmounts
-      const element = document.getElementById('dynamic-table-styles');
+      const element = document.getElementById("dynamic-table-styles");
       if (element) {
         element.remove();
       }

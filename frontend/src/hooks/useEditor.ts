@@ -3,7 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import * as Y from "yjs";
 
 import { User, Version, VersionDiff } from "../types/editor";
-import { getCurrentCellReference, columnIndexToLetter } from "../utils/cellReference";
+import {
+  columnIndexToLetter,
+  getCurrentCellReference,
+} from "../utils/cellReference";
 
 // Utility function to extract plain text from Y.XmlFragment
 const extractTextFromFragment = (fragment: Y.XmlFragment): string => {
@@ -249,70 +252,77 @@ export const useVersionManagement = (
     lineNumber?: number;
   }> | null>(null);
 
-  const saveDocument = useCallback((editor?: any) => {
-    console.log("🔍 Save button clicked");
+  const saveDocument = useCallback(
+    (editor?: any) => {
+      console.log("🔍 Save button clicked");
 
-    if (provider) {
-      try {
-        // Capture current cell reference if available
-        let currentCellRef = null;
-        let editedCells: string[] = [];
-        
-        if (editor) {
-          currentCellRef = getCurrentCellReference(editor.state);
-          
-          // Get all table cells to check for recent edits
-          const doc = editor.state.doc;
-          const cellsWithContent: string[] = [];
-          
-          doc.descendants((node: any, pos: number) => {
-            if (node.type.name === "table") {
-              let currentPos = pos + 1;
-              for (let rowIndex = 0; rowIndex < node.childCount; rowIndex++) {
-                const row = node.child(rowIndex);
-                for (let colIndex = 0; colIndex < row.childCount; colIndex++) {
-                  const cell = row.child(colIndex);
-                  const cellRef = `${columnIndexToLetter(colIndex)}${rowIndex + 1}`;
-                  
-                  // Check if cell has content (not just empty)
-                  const cellText = cell.textContent.trim();
-                  if (cellText.length > 0) {
-                    cellsWithContent.push(cellRef);
+      if (provider) {
+        try {
+          // Capture current cell reference if available
+          let currentCellRef = null;
+          let editedCells: string[] = [];
+
+          if (editor) {
+            currentCellRef = getCurrentCellReference(editor.state);
+
+            // Get all table cells to check for recent edits
+            const doc = editor.state.doc;
+            const cellsWithContent: string[] = [];
+
+            doc.descendants((node: any, pos: number) => {
+              if (node.type.name === "table") {
+                let currentPos = pos + 1;
+                for (let rowIndex = 0; rowIndex < node.childCount; rowIndex++) {
+                  const row = node.child(rowIndex);
+                  for (
+                    let colIndex = 0;
+                    colIndex < row.childCount;
+                    colIndex++
+                  ) {
+                    const cell = row.child(colIndex);
+                    const cellRef = `${columnIndexToLetter(colIndex)}${rowIndex + 1}`;
+
+                    // Check if cell has content (not just empty)
+                    const cellText = cell.textContent.trim();
+                    if (cellText.length > 0) {
+                      cellsWithContent.push(cellRef);
+                    }
+
+                    currentPos += cell.nodeSize;
                   }
-                  
-                  currentPos += cell.nodeSize;
                 }
               }
-            }
-          });
-          
-          editedCells = cellsWithContent;
-        }
+            });
 
-        provider.sendStateless(
-          JSON.stringify({
-            type: "SAVE_DOCUMENT_CUSTOM",
-            timestamp: new Date().toISOString(),
-            user: currentUser.name,
+            editedCells = cellsWithContent;
+          }
+
+          provider.sendStateless(
+            JSON.stringify({
+              type: "SAVE_DOCUMENT_CUSTOM",
+              timestamp: new Date().toISOString(),
+              user: currentUser.name,
+              currentCellRef,
+              editedCells,
+              cellChangeContext: {
+                totalCellsWithContent: editedCells.length,
+                currentlySelectedCell: currentCellRef,
+              },
+            }),
+          );
+          console.log("✅ Custom save event sent to backend with cell info", {
             currentCellRef,
-            editedCells,
-            cellChangeContext: {
-              totalCellsWithContent: editedCells.length,
-              currentlySelectedCell: currentCellRef,
-            }
-          }),
-        );
-        console.log("✅ Custom save event sent to backend with cell info", {
-          currentCellRef,
-          editedCells: editedCells.slice(0, 5) // Log first 5 for debugging
-        });
-      } catch (error) {
-        console.log("❌ Error sending save event:", error);
+            editedCells: editedCells.slice(0, 5), // Log first 5 for debugging
+          });
+        } catch (error) {
+          console.log("❌ Error sending save event:", error);
+        }
+      } else {
+        console.log("❌ No provider found");
       }
-    } else {
-      console.log("❌ No provider found");
-    }
-  }, [provider, currentUser.name]);
+    },
+    [provider, currentUser.name],
+  );
 
   const fetchVersionHistory = useCallback(async () => {
     setLoadingVersions(true);

@@ -51,28 +51,78 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
             "Changes from previous version (+ added, - removed)"
           : "Read-only preview of version content"}
         </p>
-        {/* Cell Change Information */}
-        {selectedVersionDiff.cellInfo && (
+        {/* Detailed Cell Changes */}
+        {selectedVersionDiff.cellChanges && selectedVersionDiff.cellChanges.length > 0 && (
           <div className="mt-3 space-y-2 border-t border-orange-200 pt-3">
-            <div className="text-sm font-medium text-orange-800">Cell Changes:</div>
+            <div className="text-sm font-medium text-orange-800">
+              Detailed Cell Changes:
+            </div>
+            <div className="max-h-40 overflow-y-auto space-y-1">
+              {selectedVersionDiff.cellChanges.map((change, index) => (
+                <div key={index} className="text-xs bg-gray-50 p-2 rounded border">
+                  <div className="font-medium text-gray-700 mb-1">
+                    📍 {change.cellRef}
+                    <span className={`ml-2 px-1 rounded text-xs ${
+                      change.changeType === 'added' ? 'bg-green-100 text-green-700' :
+                      change.changeType === 'deleted' ? 'bg-red-100 text-red-700' :
+                      'bg-blue-100 text-blue-700'
+                    }`}>
+                      {change.changeType}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    {change.previousContent && (
+                      <div className="text-red-600">
+                        <span className="font-mono">- "</span>
+                        <span className="bg-red-50 px-1 rounded">{change.previousContent}</span>
+                        <span className="font-mono">"</span>
+                      </div>
+                    )}
+                    {change.currentContent && (
+                      <div className="text-green-600">
+                        <span className="font-mono">+ "</span>
+                        <span className="bg-green-50 px-1 rounded">{change.currentContent}</span>
+                        <span className="font-mono">"</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Cell Change Summary (fallback) */}
+        {selectedVersionDiff.cellInfo && !selectedVersionDiff.cellChanges && (
+          <div className="mt-3 space-y-2 border-t border-orange-200 pt-3">
+            <div className="text-sm font-medium text-orange-800">
+              Cell Changes Summary:
+            </div>
             <div className="flex flex-wrap gap-2">
               {selectedVersionDiff.cellInfo.currentCellRef && (
                 <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
                   📍 Active: {selectedVersionDiff.cellInfo.currentCellRef}
                 </span>
               )}
-              {selectedVersionDiff.cellInfo.editedCells && selectedVersionDiff.cellInfo.editedCells.length > 0 && (
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
-                  📝 {selectedVersionDiff.cellInfo.editedCells.length} cells edited
-                </span>
-              )}
+              {selectedVersionDiff.cellInfo.editedCells &&
+                selectedVersionDiff.cellInfo.editedCells.length > 0 && (
+                  <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs text-green-800">
+                    📝 {selectedVersionDiff.cellInfo.editedCells.length} cells
+                    edited
+                  </span>
+                )}
             </div>
-            {selectedVersionDiff.cellInfo.editedCells && selectedVersionDiff.cellInfo.editedCells.length > 0 && (
-              <div className="text-xs text-orange-600">
-                Modified cells: {selectedVersionDiff.cellInfo.editedCells.slice(0, 10).join(', ')}
-                {selectedVersionDiff.cellInfo.editedCells.length > 10 && ` and ${selectedVersionDiff.cellInfo.editedCells.length - 10} more`}
-              </div>
-            )}
+            {selectedVersionDiff.cellInfo.editedCells &&
+              selectedVersionDiff.cellInfo.editedCells.length > 0 && (
+                <div className="text-xs text-orange-600">
+                  Modified cells:{" "}
+                  {selectedVersionDiff.cellInfo.editedCells
+                    .slice(0, 10)
+                    .join(", ")}
+                  {selectedVersionDiff.cellInfo.editedCells.length > 10 &&
+                    ` and ${selectedVersionDiff.cellInfo.editedCells.length - 10} more`}
+                </div>
+              )}
           </div>
         )}
       </div>

@@ -59,7 +59,7 @@ const documentSaver = {
         currentCellRef: payload.currentCellRef || null,
         editedCells: payload.editedCells || [],
         cellChangeContext: payload.cellChangeContext || {},
-      }
+      },
     };
 
     // Save to file

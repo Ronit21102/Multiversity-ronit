@@ -2,12 +2,12 @@
 export function columnIndexToLetter(index: number): string {
   let result = "";
   let columnIndex = index;
-  
+
   while (columnIndex >= 0) {
     result = String.fromCharCode(65 + (columnIndex % 26)) + result;
     columnIndex = Math.floor(columnIndex / 26) - 1;
   }
-  
+
   return result;
 }
 
@@ -22,19 +22,19 @@ export function letterToColumnIndex(letter: string): number {
 
 // Generate CSS for column headers dynamically
 export function generateColumnHeaderCSS(maxColumns = 50): string {
-  let css = '';
-  
+  let css = "";
+
   for (let i = 0; i < maxColumns; i++) {
     const columnLetter = columnIndexToLetter(i);
     const columnSelector = i + 1; // CSS nth-child is 1-based
-    
+
     css += `
 .ProseMirror tr:first-child td:nth-child(${columnSelector})::before,
 .ProseMirror tr:first-child th:nth-child(${columnSelector})::before { 
   content: "${columnLetter}"; 
 }`;
   }
-  
+
   return css;
 }
 

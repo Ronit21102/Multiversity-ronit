@@ -14,6 +14,13 @@ export interface CellInfo {
   };
 }
 
+export interface CellChange {
+  cellRef: string;
+  previousContent: string;
+  currentContent: string;
+  changeType: "added" | "deleted" | "modified";
+}
+
 export interface Version {
   id: number;
   name: string;
@@ -40,4 +47,5 @@ export interface VersionDiff {
   savedBy: string;
   cellInfo?: CellInfo;
   previousCellInfo?: CellInfo;
+  cellChanges?: CellChange[];
 }
