@@ -86,6 +86,11 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">
                         {version.name}
+                        {version.cellInfo?.currentCellRef && (
+                          <span className="ml-2 text-xs text-blue-600 bg-blue-100 px-1 rounded">
+                            {version.cellInfo.currentCellRef}
+                          </span>
+                        )}
                       </div>
                       <div className="mt-1 text-xs text-gray-500">
                         {formatTimestamp(version.timestamp)}
@@ -93,6 +98,23 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                       <div className="mt-1 text-xs text-gray-600">
                         by {version.savedBy}
                       </div>
+                      {/* Cell Information Display */}
+                      {version.cellInfo && (
+                        <div className="mt-2 space-y-1">
+                          {version.cellInfo.currentCellRef && (
+                            <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                              📍 Active: {version.cellInfo.currentCellRef}
+                            </div>
+                          )}
+                          {version.cellInfo.editedCells && version.cellInfo.editedCells.length > 0 && (
+                            <div className="text-xs text-green-600">
+                              📝 Edited {version.cellInfo.editedCells.length} cells: {
+                                version.cellInfo.editedCells.slice(0, 3).join(', ')
+                              }{version.cellInfo.editedCells.length > 3 ? '...' : ''}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   {version.id > 1 && (

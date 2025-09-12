@@ -29,8 +29,8 @@ export function generateColumnHeaderCSS(maxColumns = 50): string {
     const columnSelector = i + 1; // CSS nth-child is 1-based
     
     css += `
-.ProseMirror td:nth-child(${columnSelector})::after,
-.ProseMirror th:nth-child(${columnSelector})::after { 
+.ProseMirror tr:first-child td:nth-child(${columnSelector})::before,
+.ProseMirror tr:first-child th:nth-child(${columnSelector})::before { 
   content: "${columnLetter}"; 
 }`;
   }

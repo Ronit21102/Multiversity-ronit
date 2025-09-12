@@ -5,12 +5,22 @@ export interface User {
   name: string;
   color: string;
 }
+export interface CellInfo {
+  currentCellRef: string | null;
+  editedCells: string[];
+  cellChangeContext: {
+    totalCellsWithContent?: number;
+    currentlySelectedCell?: string | null;
+  };
+}
+
 export interface Version {
   id: number;
   name: string;
   timestamp: string;
   savedBy: string;
   filePath: string;
+  cellInfo?: CellInfo;
 }
 
 export interface EditorProps {
@@ -28,4 +38,6 @@ export interface VersionDiff {
   previousState: number[] | null;
   timestamp: string;
   savedBy: string;
+  cellInfo?: CellInfo;
+  previousCellInfo?: CellInfo;
 }

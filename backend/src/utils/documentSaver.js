@@ -46,7 +46,7 @@ const documentSaver = {
     // Also keep state for reconstruction
     const currentState = Y.encodeStateAsUpdate(doc);
 
-    // Create save data with Y.js snapshot
+    // Create save data with Y.js snapshot and cell information
     const saveData = {
       timestamp: new Date().toISOString(),
       documentName: data.documentName,
@@ -54,6 +54,12 @@ const documentSaver = {
       // Store Y.js snapshot for proper versioning
       yjsSnapshot: Array.from(snapshotData),
       yjsState: Array.from(currentState), // Keep for reconstruction
+      // Cell-level tracking information
+      cellInfo: {
+        currentCellRef: payload.currentCellRef || null,
+        editedCells: payload.editedCells || [],
+        cellChangeContext: payload.cellChangeContext || {},
+      }
     };
 
     // Save to file
@@ -72,6 +78,7 @@ const documentSaver = {
       timestamp: saveData.timestamp,
       savedBy: payload.user || "Unknown",
       filePath: filepath,
+      cellInfo: saveData.cellInfo, // Include cell information in version metadata
     });
 
     console.log(

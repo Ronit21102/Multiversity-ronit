@@ -8,7 +8,7 @@ import CellReferenceDisplay from "./CellReferenceDisplay";
 interface EditorToolbarProps {
   editor: Editor;
   currentUser: User;
-  onSave: () => void;
+  onSave: (editor?: Editor) => void;
   onVersionHistory: () => void;
   onChangeName: () => void;
 }
@@ -162,7 +162,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
           📄 Version History
         </button>
         <button
-          onClick={onSave}
+          onClick={() => onSave(editor)}
           className="flex items-center gap-2 rounded-md border border-green-300 bg-green-50 px-3 py-1 text-sm text-green-700 transition-colors hover:bg-green-100"
         >
           💾 Save

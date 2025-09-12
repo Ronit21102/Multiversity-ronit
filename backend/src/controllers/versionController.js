@@ -19,6 +19,7 @@ const versionController = {
         timestamp: version.timestamp,
         savedBy: version.savedBy,
         filePath: version.filePath,
+        cellInfo: version.cellInfo || {}, // Include cell information in API response
       })),
     });
   },
@@ -59,6 +60,8 @@ const versionController = {
         previousState: previousVersionData?.yjsState || null,
         timestamp: versionData.timestamp,
         savedBy: versionData.savedBy,
+        cellInfo: versionData.cellInfo || {}, // Include cell information in diff response
+        previousCellInfo: previousVersionData?.cellInfo || {}, // Include previous version cell info
       });
     } catch (error) {
       console.error("Error getting version snapshots:", error);

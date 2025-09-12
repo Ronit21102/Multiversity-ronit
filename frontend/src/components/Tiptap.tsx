@@ -206,55 +206,55 @@ const Editor: React.FC<EditorProps> = ({ ydoc, provider, room }) => {
       <DynamicTableStyles maxColumns={100} />
       <div className="mx-auto flex w-full max-w-7xl gap-4">
         {/* Main Editor */}
-      <div
-        className={`${showVersionPreview ? "w-1/2" : "flex-1"} rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300`}
-      >
-        {/* Online Users Header */}
-        <OnlineUsers
-          onlineUsers={onlineUsers}
-          currentUser={currentUser}
-          status={status}
-        />
-
-        {/* Toolbar */}
-        <EditorToolbar
-          editor={editor}
-          currentUser={currentUser}
-          onSave={saveDocument}
-          onVersionHistory={openVersionSidebar}
-          onChangeName={setName}
-        />
-
-        {/* Editor Content */}
-        <div className="prose prose-sm max-w-none">
-          <EditorContent
-            editor={editor}
-            className="min-h-[500px] p-4 focus:outline-none [&_.ProseMirror]:min-h-[450px] [&_.ProseMirror]:outline-none [&_.ProseMirror_.column-resize-handle]:pointer-events-none [&_.ProseMirror_.column-resize-handle]:absolute [&_.ProseMirror_.column-resize-handle]:bottom-0 [&_.ProseMirror_.column-resize-handle]:right-[-2px] [&_.ProseMirror_.column-resize-handle]:top-0 [&_.ProseMirror_.column-resize-handle]:w-1 [&_.ProseMirror_.column-resize-handle]:bg-blue-500 [&_.ProseMirror_.resize-cursor]:cursor-col-resize [&_.ProseMirror_.selectedCell]:bg-blue-100 [&_.ProseMirror_code]:rounded [&_.ProseMirror_code]:bg-gray-100 [&_.ProseMirror_code]:px-1 [&_.ProseMirror_em]:italic [&_.ProseMirror_p]:my-2 [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_table]:mb-4 [&_.ProseMirror_table]:mt-4 [&_.ProseMirror_table]:w-full [&_.ProseMirror_table]:table-auto [&_.ProseMirror_table]:border-collapse [&_.ProseMirror_td]:relative [&_.ProseMirror_td]:min-w-[1em] [&_.ProseMirror_td]:border [&_.ProseMirror_td]:border-gray-300 [&_.ProseMirror_td]:p-2 [&_.ProseMirror_th]:relative [&_.ProseMirror_th]:min-w-[1em] [&_.ProseMirror_th]:border [&_.ProseMirror_th]:border-gray-300 [&_.ProseMirror_th]:bg-gray-50 [&_.ProseMirror_th]:p-2 [&_.ProseMirror_th]:font-semibold [&_.ProseMirror_ul]:ml-6 [&_.ProseMirror_ul]:list-disc"
+        <div
+          className={`${showVersionPreview ? "w-1/2" : "flex-1"} rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300`}
+        >
+          {/* Online Users Header */}
+          <OnlineUsers
+            onlineUsers={onlineUsers}
+            currentUser={currentUser}
+            status={status}
           />
+
+          {/* Toolbar */}
+          <EditorToolbar
+            editor={editor}
+            currentUser={currentUser}
+            onSave={saveDocument}
+            onVersionHistory={openVersionSidebar}
+            onChangeName={setName}
+          />
+
+          {/* Editor Content */}
+          <div className="prose prose-sm max-w-none">
+            <EditorContent
+              editor={editor}
+              className="min-h-[500px] p-4 focus:outline-none [&_.ProseMirror]:min-h-[450px] [&_.ProseMirror]:outline-none [&_.ProseMirror_.column-resize-handle]:pointer-events-none [&_.ProseMirror_.column-resize-handle]:absolute [&_.ProseMirror_.column-resize-handle]:bottom-0 [&_.ProseMirror_.column-resize-handle]:right-[-2px] [&_.ProseMirror_.column-resize-handle]:top-0 [&_.ProseMirror_.column-resize-handle]:w-1 [&_.ProseMirror_.column-resize-handle]:bg-blue-500 [&_.ProseMirror_.resize-cursor]:cursor-col-resize [&_.ProseMirror_.selectedCell]:bg-blue-100 [&_.ProseMirror_code]:rounded [&_.ProseMirror_code]:bg-gray-100 [&_.ProseMirror_code]:px-1 [&_.ProseMirror_em]:italic [&_.ProseMirror_p]:my-2 [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_table]:mb-4 [&_.ProseMirror_table]:mt-4 [&_.ProseMirror_table]:w-full [&_.ProseMirror_table]:table-auto [&_.ProseMirror_table]:border-collapse [&_.ProseMirror_td]:relative [&_.ProseMirror_td]:min-w-[1em] [&_.ProseMirror_td]:border [&_.ProseMirror_td]:border-gray-300 [&_.ProseMirror_td]:p-2 [&_.ProseMirror_th]:relative [&_.ProseMirror_th]:min-w-[1em] [&_.ProseMirror_th]:border [&_.ProseMirror_th]:border-gray-300 [&_.ProseMirror_th]:bg-gray-50 [&_.ProseMirror_th]:p-2 [&_.ProseMirror_th]:font-semibold [&_.ProseMirror_ul]:ml-6 [&_.ProseMirror_ul]:list-disc"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Version Changes Preview Panel */}
-      <VersionPreview
-        showVersionPreview={showVersionPreview}
-        selectedVersionDiff={selectedVersionDiff}
-        previewEditor={dynamicPreviewEditor}
-        diffData={diffData}
-        onApplyVersion={applyVersionChanges}
-        onDiscardVersion={discardVersionChanges}
-      />
+        {/* Version Changes Preview Panel */}
+        <VersionPreview
+          showVersionPreview={showVersionPreview}
+          selectedVersionDiff={selectedVersionDiff}
+          previewEditor={dynamicPreviewEditor}
+          diffData={diffData}
+          onApplyVersion={applyVersionChanges}
+          onDiscardVersion={discardVersionChanges}
+        />
 
-      {/* Version History Sidebar */}
-      <VersionSidebar
-        showVersionSidebar={showVersionSidebar}
-        versions={versions}
-        loadingVersions={loadingVersions}
-        selectedVersionDiff={selectedVersionDiff}
-        showVersionPreview={showVersionPreview}
-        onClose={closeVersionSidebar}
-        onRefresh={fetchVersionHistory}
-        onViewVersion={viewVersionChanges}
-      />
+        {/* Version History Sidebar */}
+        <VersionSidebar
+          showVersionSidebar={showVersionSidebar}
+          versions={versions}
+          loadingVersions={loadingVersions}
+          selectedVersionDiff={selectedVersionDiff}
+          showVersionPreview={showVersionPreview}
+          onClose={closeVersionSidebar}
+          onRefresh={fetchVersionHistory}
+          onViewVersion={viewVersionChanges}
+        />
       </div>
     </>
   );

@@ -55,6 +55,6 @@ export const TableWithCellReferences = Table.extend({
   name: "tableWithReferences",
 
   addProseMirrorPlugins() {
-    return [...(this.parent?.() || []), cellReferenceDataPlugin];
+    return [...(super.addProseMirrorPlugins?.() || []), cellReferenceDataPlugin];
   },
 });
