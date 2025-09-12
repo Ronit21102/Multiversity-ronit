@@ -52,46 +52,58 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
           : "Read-only preview of version content"}
         </p>
         {/* Detailed Cell Changes */}
-        {selectedVersionDiff.cellChanges && selectedVersionDiff.cellChanges.length > 0 && (
-          <div className="mt-3 space-y-2 border-t border-orange-200 pt-3">
-            <div className="text-sm font-medium text-orange-800">
-              Detailed Cell Changes:
-            </div>
-            <div className="max-h-40 overflow-y-auto space-y-1">
-              {selectedVersionDiff.cellChanges.map((change, index) => (
-                <div key={index} className="text-xs bg-gray-50 p-2 rounded border">
-                  <div className="font-medium text-gray-700 mb-1">
-                    📍 {change.cellRef}
-                    <span className={`ml-2 px-1 rounded text-xs ${
-                      change.changeType === 'added' ? 'bg-green-100 text-green-700' :
-                      change.changeType === 'deleted' ? 'bg-red-100 text-red-700' :
-                      'bg-blue-100 text-blue-700'
-                    }`}>
-                      {change.changeType}
-                    </span>
+        {selectedVersionDiff.cellChanges &&
+          selectedVersionDiff.cellChanges.length > 0 && (
+            <div className="mt-3 space-y-2 border-t border-orange-200 pt-3">
+              <div className="text-sm font-medium text-orange-800">
+                Detailed Cell Changes:
+              </div>
+              <div className="max-h-40 space-y-1 overflow-y-auto">
+                {selectedVersionDiff.cellChanges.map((change, index) => (
+                  <div
+                    key={index}
+                    className="rounded border bg-gray-50 p-2 text-xs"
+                  >
+                    <div className="mb-1 font-medium text-gray-700">
+                       {change.cellRef}
+                      <span
+                        className={`ml-2 rounded px-1 text-xs ${
+                          change.changeType === "added" ?
+                            "bg-green-100 text-green-700"
+                          : change.changeType === "deleted" ?
+                            "bg-red-100 text-red-700"
+                          : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {change.changeType}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {change.previousContent && (
+                        <div className="text-red-600">
+                          <span className="font-mono">- "</span>
+                          <span className="rounded bg-red-50 px-1">
+                            {change.previousContent}
+                          </span>
+                          <span className="font-mono">"</span>
+                        </div>
+                      )}
+                      {change.currentContent && (
+                        <div className="text-green-600">
+                          <span className="font-mono">+ "</span>
+                          <span className="rounded bg-green-50 px-1">
+                            {change.currentContent}
+                          </span>
+                          <span className="font-mono">"</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    {change.previousContent && (
-                      <div className="text-red-600">
-                        <span className="font-mono">- "</span>
-                        <span className="bg-red-50 px-1 rounded">{change.previousContent}</span>
-                        <span className="font-mono">"</span>
-                      </div>
-                    )}
-                    {change.currentContent && (
-                      <div className="text-green-600">
-                        <span className="font-mono">+ "</span>
-                        <span className="bg-green-50 px-1 rounded">{change.currentContent}</span>
-                        <span className="font-mono">"</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-        
+          )}
+
         {/* Cell Change Summary (fallback) */}
         {selectedVersionDiff.cellInfo && !selectedVersionDiff.cellChanges && (
           <div className="mt-3 space-y-2 border-t border-orange-200 pt-3">
@@ -101,7 +113,7 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
             <div className="flex flex-wrap gap-2">
               {selectedVersionDiff.cellInfo.currentCellRef && (
                 <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
-                  📍 Active: {selectedVersionDiff.cellInfo.currentCellRef}
+                  Active: {selectedVersionDiff.cellInfo.currentCellRef}
                 </span>
               )}
               {selectedVersionDiff.cellInfo.editedCells &&

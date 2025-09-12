@@ -103,7 +103,7 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                         <div className="mt-2 space-y-1">
                           {version.cellInfo.currentCellRef && (
                             <div className="rounded bg-blue-50 px-2 py-1 text-xs text-blue-600">
-                              📍 Active: {version.cellInfo.currentCellRef}
+                               Active: {version.cellInfo.currentCellRef}
                             </div>
                           )}
                           {version.cellInfo.editedCells &&
@@ -143,30 +143,42 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                           "Previewing Changes"
                         : "Preview Changes"}
                       </button>
-                      
+
                       {/* Show detailed cell changes summary when this version is selected */}
-                      {selectedVersionDiff?.versionId === version.id && 
-                       selectedVersionDiff.cellChanges && 
-                       selectedVersionDiff.cellChanges.length > 0 && (
-                        <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                          <div className="font-medium text-gray-700 mb-1">
-                            🔍 Detailed Changes:
+                      {selectedVersionDiff?.versionId === version.id &&
+                        selectedVersionDiff.cellChanges &&
+                        selectedVersionDiff.cellChanges.length > 0 && (
+                          <div className="mt-2 rounded bg-gray-50 p-2 text-xs">
+                            <div className="mb-1 font-medium text-gray-700">
+                              🔍 Detailed Changes:
+                            </div>
+                            {selectedVersionDiff.cellChanges
+                              .slice(0, 3)
+                              .map((change, idx) => (
+                                <div
+                                  key={idx}
+                                  className="mb-1 text-xs text-gray-600"
+                                >
+                                  <span className="font-mono font-medium">
+                                    {change.cellRef}:
+                                  </span>{" "}
+                                  <span className="text-red-500">
+                                    "{change.previousContent || "empty"}"
+                                  </span>
+                                  {" → "}
+                                  <span className="text-green-500">
+                                    "{change.currentContent || "empty"}"
+                                  </span>
+                                </div>
+                              ))}
+                            {selectedVersionDiff.cellChanges.length > 3 && (
+                              <div className="text-xs text-gray-500">
+                                +{selectedVersionDiff.cellChanges.length - 3}{" "}
+                                more changes...
+                              </div>
+                            )}
                           </div>
-                          {selectedVersionDiff.cellChanges.slice(0, 3).map((change, idx) => (
-                            <div key={idx} className="text-xs text-gray-600 mb-1">
-                              <span className="font-mono font-medium">{change.cellRef}:</span>{" "}
-                              <span className="text-red-500">"{change.previousContent || "empty"}"</span>
-                              {" → "}
-                              <span className="text-green-500">"{change.currentContent || "empty"}"</span>
-                            </div>
-                          ))}
-                          {selectedVersionDiff.cellChanges.length > 3 && (
-                            <div className="text-xs text-gray-500">
-                              +{selectedVersionDiff.cellChanges.length - 3} more changes...
-                            </div>
-                          )}
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
                 </div>
