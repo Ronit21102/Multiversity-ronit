@@ -19,6 +19,8 @@ export interface CellChange {
   previousContent: string;
   currentContent: string;
   changeType: "added" | "deleted" | "modified";
+  editedBy?: string; // User who made this specific cell change
+  timestamp?: string; // When this cell was changed
 }
 
 export interface Version {

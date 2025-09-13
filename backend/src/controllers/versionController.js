@@ -225,6 +225,8 @@ function extractCellChanges(currentVersion, previousVersion) {
             : previousContent && !currentContent
             ? "deleted"
             : "modified",
+        editedBy: currentVersion?.savedBy || "Unknown User", // Who made this change
+        timestamp: currentVersion?.timestamp || new Date().toISOString(), // When it was changed
       });
     }
   });

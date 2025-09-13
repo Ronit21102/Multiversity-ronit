@@ -181,6 +181,14 @@ const VersionSidebar: React.FC<VersionSidebarProps> = ({
                                   <span className="text-green-500">
                                     "{change.currentContent || "empty"}"
                                   </span>
+                                  
+                                  {/* User info in sidebar */}
+                                  {change.editedBy && (
+                                    <div className="mt-1 text-xs text-gray-400">
+                                      <span className="mr-1">👤</span>
+                                      <span>{change.editedBy}</span>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             {selectedVersionDiff.cellChanges.length > 3 && (

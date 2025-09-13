@@ -85,6 +85,20 @@ const VersionPreview: React.FC<VersionPreviewProps> = ({
                       >
                         {change.changeType}
                       </span>
+                      
+                      {/* User and timestamp information */}
+                      {change.editedBy && (
+                        <div className="mt-1 flex items-center text-xs text-gray-500">
+                          <span className="mr-1">👤</span>
+                          <span className="font-medium">{change.editedBy}</span>
+                          {change.timestamp && (
+                            <>
+                              <span className="mx-1">•</span>
+                              <span>{new Date(change.timestamp).toLocaleString()}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-1">
                       {change.previousContent && (
